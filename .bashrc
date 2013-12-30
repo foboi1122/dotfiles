@@ -196,3 +196,5 @@
 # }
 # 
 # alias cd=cd_func
+alias cfind='find . -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp"'
+alias cscope='cscope -q -R -b'

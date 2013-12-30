@@ -10,7 +10,10 @@
 			speedbar
 			sr-speedbar
 			xcscope
-				) "Default packages")
+			buffer-move
+			yasnippet
+			cpputils-cmake
+			) "Default packages")
 
 ;;Setup and download necessary packages
 (require 'cl)
@@ -39,15 +42,33 @@
 ;; initialize sr-speedbar
 (require 'speedbar)
 
+;; require buffer-move
+(global-set-key (kbd "<C-S-up>")     'buf-move-up)
+(global-set-key (kbd "<C-S-down>")   'buf-move-down)
+(global-set-key (kbd "<C-S-left>")   'buf-move-left)
+(global-set-key (kbd "<C-S-right>")  'buf-move-right)
+
+(require 'yasnippet)
+(yas-global-mode 1)
+
 ;; auto-complete stuff
 (require 'auto-complete-config)
 (dolist (m '(c-mode c++-mode java-mode))
   (add-to-list 'ac-modes m))
 (ac-config-default)
 (global-auto-complete-mode t)
+;;; set the trigger key so that it can work together with yasnippet on tab key,
+;;; if the word exists in yasnippet, pressing tab will cause yasnippet to
+;;; activate, otherwise, auto-complete will
+(ac-set-trigger-key "TAB")
+(ac-set-trigger-key "<tab>")
 
+;; Link semantic to cscope using xscope
+(require 'semantic/scope)
+(require 'xcscope)
+(cscope-setup)
+(require 'semantic/symref)
 (semantic-mode 1)
-
 (require 'semantic/ia)
 
 ;; Semantic
@@ -82,13 +103,8 @@
       ;; will appear before semantic tag completions).
 
       (setq ac-sources '(ac-source-semantic ac-source-yasnippet))
+      (setq electric-pair-mode 1)
   ))
-
-;; Link semantic to cscope using xscope
-(require 'semantic/scope)
-(require 'xcscope)
-(cscope-setup)
-(require 'semantic/symref)
 
 ;;set font
 (set-face-attribute 'default nil :family "Anonymous Pro" :height 140)
@@ -126,3 +142,15 @@
      (define-key function-key-map "\e[1;9B" [M-down])
      (define-key function-key-map "\e[1;9C" [M-right])
      (define-key function-key-map "\e[1;9D" [M-left])))
+
+;; Set backup directory
+(setq backup-directory-alist `(("." . "~/.saves")))
+
+(setq c-default-style "linux"
+          c-basic-offset 4)
+
+;;Cpputils setup for cmake
+(add-hook 'c-mode-hook (lambda () (cppcm-reload-all)))
+(add-hook 'c++-mode-hook (lambda () (cppcm-reload-all)))
+;; OPTIONAL, somebody reported that they can use this package with Fortran
+(add-hook 'c90-mode-hook (lambda () (cppcm-reload-all)))
